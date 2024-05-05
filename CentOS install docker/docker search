@@ -30,3 +30,14 @@ infrastructureascode/hello-world           A tiny "Hello World" web server with 
 vad1mo/hello-world-rest                    A simple REST Service that echoes back all t…   7         
 rsperling/hello-world3                                                                     0         
 in28min/hello-world-rest-api                                    
+
+
+显示最常用的5 个镜像
+
+[pengchao@centosb docker]$ docker search --limit 5  hello-world
+NAME                                   DESCRIPTION                                     STARS     OFFICIAL
+hello-world                            Hello World! (an example of minimal Dockeriz…   2226      [OK]
+rancher/hello-world                    This container image is no longer maintained…   6         
+okteto/hello-world                                                                     0         
+tutum/hello-world                      Image to test docker deployments. Has Apache…   90        
+thomaspoignant/hello-world-rest-json   This project is a REST hello-world API to bu…   2         
