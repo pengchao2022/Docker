@@ -29,3 +29,20 @@ e2b35c8722c1   nginx     "/docker-entrypoint.…"   5 hours ago   Up 5 hours   0
 nginx --141MB
 下面运行的 nginx ---141 MB 所以 目前运行的nginx 是latest 版本， 可以删除 236MB的nginx 即可
 
+
+————————————————————————————————————————————————————
+
+Docker 也支持删除全部镜像 
+
+[pengchao@centosb docker]$ docker rmi -f $(docker images -qa)
+Untagged: hello-world:latest
+Untagged: hello-world@sha256:2498fce14358aa50ead0cc6c19990fc6ff866ce72aeb5546e1d59caac3d0d60f
+Deleted: sha256:feb5d9fea6a5e9606aa995e879d862b825965ba48de054caab5ef356dc6b3412
+Deleted: sha256:e07ee1baac5fae6a26f30cabfe54a36d3402f96afda318fe0a96cec4ca393359
+Error response from daemon: conflict: unable to delete 605c77e624dd (cannot be forced) - image is being used by running container e2b35c8722c1
+
+注意 如果有image 在运行，是不能强制删除的 
+
+
+
+
