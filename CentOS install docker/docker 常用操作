@@ -1,5 +1,0 @@
-docker search ----用于查找镜像
-
-如： docker search mysql 
-
-  

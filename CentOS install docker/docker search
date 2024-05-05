@@ -1,0 +1,32 @@
+docker search ----用于查找镜像
+
+如： docker search mysql 
+
+  docker search hello-world
+[pengchao@centosb docker]$ docker search hello-world
+NAME                                       DESCRIPTION                                     STARS     OFFICIAL
+hello-world                                Hello World! (an example of minimal Dockeriz…   2226      [OK]
+rancher/hello-world                        This container image is no longer maintained…   6         
+okteto/hello-world                                                                         0         
+tutum/hello-world                          Image to test docker deployments. Has Apache…   90        
+thomaspoignant/hello-world-rest-json       This project is a REST hello-world API to bu…   2         
+kitematic/hello-world-nginx                A light-weight nginx container that demonstr…   151       
+dockercloud/hello-world                    Hello World!                                    20        
+ansibleplaybookbundle/hello-world-apb      An APB which deploys a sample Hello World! a…   1         
+ansibleplaybookbundle/hello-world-db-apb   An APB which deploys a sample Hello World! a…   2         
+crccheck/hello-world                       Hello World web server in under 2.5 MB          23        
+strimzi/hello-world-consumer                                                               0         
+strimzi/hello-world-producer                                                               0         
+businessgeeks00/hello-world-nodejs                                                         0         
+koudaiii/hello-world                                                                       0         
+freddiedevops/hello-world-spring-boot                                                      0         
+strimzi/hello-world-streams                                                                0         
+garystafford/hello-world                   Simple hello-world Spring Boot service for t…   0         
+ppc64le/hello-world                        Hello World! (an example of minimal Dockeriz…   2         
+tsepotesting123/hello-world                                                                0         
+kevindockercompany/hello-world                                                             0         
+dandando/hello-world-dotnet                                                                0         
+infrastructureascode/hello-world           A tiny "Hello World" web server with a healt…   1         
+vad1mo/hello-world-rest                    A simple REST Service that echoes back all t…   7         
+rsperling/hello-world3                                                                     0         
+in28min/hello-world-rest-api                                    
