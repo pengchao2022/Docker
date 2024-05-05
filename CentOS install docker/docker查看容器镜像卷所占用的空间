@@ -1,0 +1,7 @@
+
+[pengchao@centosb docker]$ docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          4         1         409.4MB   348.3MB (85%)
+Containers      1         1         1.151kB   0B (0%)
+Local Volumes   0         0         0B        0B
+Build Cache     0         0         0B        0B
