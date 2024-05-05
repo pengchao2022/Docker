@@ -10,3 +10,22 @@ Deleted: sha256:a8f09c4919857128b1466cc26381de0f9d39a94171534f63859a662d50c396ca
 Deleted: sha256:2ae5fa95c0fce5ef33fbb87a7e2f49f2a56064566a37a83b97d3f668c10b43d6
 Deleted: sha256:d0fe97fa8b8cefdffcef1d62b65aba51a6c87b6679628a2b50fc6a7a579f764c
 [pengchao@centosb docker]$ 
+
+如果有多个镜像 同名但是不知道哪一个是正在运行的image 时 可以用
+
+docker ps --size 来查看
+
+---------------------------------------------------
+
+[pengchao@centosb docker]$ docker images
+REPOSITORY    TAG           IMAGE ID       CREATED       SIZE
+nginx         stable-perl   6e2eab48689e   11 days ago   236MB
+nginx         latest        605c77e624dd   2 years ago   141MB
+hello-world   latest        feb5d9fea6a5   2 years ago   13.3kB
+[pengchao@centosb docker]$ docker ps --size
+CONTAINER ID   IMAGE     COMMAND                  CREATED       STATUS       PORTS                               NAMES     SIZE
+e2b35c8722c1   nginx     "/docker-entrypoint.…"   5 hours ago   Up 5 hours   0.0.0.0:88->80/tcp, :::88->80/tcp   mynginx   1.15kB (virtual 141MB)
+
+nginx --141MB
+下面运行的 nginx ---141 MB 所以 目前运行的nginx 是latest 版本， 可以删除 236MB的nginx 即可
+
