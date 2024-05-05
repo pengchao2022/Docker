@@ -37,6 +37,12 @@ docker rm -f ------- 删除运行中的容器
 
 [pengchao@centosb docker]$ docker exec -it e2b35c8722c1 /bin/bash     ----- 进入容器里面
 
+docker commit -a "pengchao" 容器id 改完后的镜像名：v1.0---改后的版本号
+
+
+
+
+
 
 
 
