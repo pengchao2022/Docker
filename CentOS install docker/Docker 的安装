@@ -1,0 +1,29 @@
+在centos 上面安装 Docker
+检查更新：
+sudo yum check-update
+安装：
+curl -fsSL https://get.docker.com/ | sh
+启动docker:
+sudo systemctl start docker
+sudo systemctl status docker
+
+开机启动docker :
+[root@centosb docker]# systemctl enable docker
+Created symlink from /etc/systemd/system/multi-user.target.wants/docker.service to /usr/lib/systemd/system/docker.service
+
+将当前用户添加到docker 组，这样可以 直接运行docker :
+
+sudo usermod -aG docker $(whoami)
+
+为docker 配置阿里云 镜像加速器：
+
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": ["https://qshjcvem.mirror.aliyuncs.com"]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+
