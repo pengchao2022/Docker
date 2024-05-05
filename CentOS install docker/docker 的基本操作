@@ -1,0 +1,44 @@
+查找docker 镜像可以去 ： https://hub.docker.com/
+
+点击 “Tags”可以看到不同的版本 ： 如 下载 stable-perl 版本：
+
+docker pull nginx:stable-perl
+
+Docker 下载镜像：
+
+docker pull nginx
+
+Docker 查看镜像：
+
+pengchao@centosb docker]$ docker images
+REPOSITORY   TAG           IMAGE ID       CREATED       SIZE
+nginx        stable-perl   6e2eab48689e   11 days ago   236MB
+nginx        latest        605c77e624dd   2 years ago   141MB
+
+Docker 删除镜像：
+
+[pengchao@centosb docker]$ docker rmi nginx:stable-perl ---- 删除nginx 后面带的版本号，如果没有带版本号 删除的是最新的
+
+也可以用image ID 去删除：
+
+[pengchao@centosb docker]$ docker rmi dabbfbe0c57b   ------ 用 Image ID 去删除
+
+Docker 启动镜像：并添加端口映射
+
+[pengchao@centosb docker]$ docker run --name=mynginx -d --restart=always -p 88:80 nginx
+
+本机的88 端口映射了docker 的80 端口
+
+docker ps ------查看运行中的镜像
+
+docker ps -a -----查看最近运行中的镜像
+
+
+
+
+                                                                             
+   
+
+
+
+
