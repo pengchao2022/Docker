@@ -1,0 +1,31 @@
+Docker 后台运行ubuntu 
+注意对于 ubuntu, centos 不能用-d 参数后台运行，因为这些程序在后台运行后会立即终止
+正确的方法是 docker run -it 
+
+[pengchao@centosb docker]$ docker run -it ubuntu /bin/bash
+root@8eefad3976d9:/# 
+要退出 ubuntu 的终端可以用 control +p +q 组合键，不能用 exit 退出
+root@8eefad3976d9:/# [pengchao@centosb docker]$ 
+[pengchao@centosb docker]$ 
+现在再看运行中的容器可以看到：ubuntu依然在运行
+pengchao@centosb docker]$ docker ps 
+CONTAINER ID   IMAGE         COMMAND                  CREATED         STATUS         PORTS                               NAMES
+8eefad3976d9   ubuntu        "/bin/bash"              3 minutes ago   Up 3 minutes                                       cranky_dhawan
+2af4fc7d13ef   redis:6.0.8   "docker-entrypoint.s…"   8 hours ago     Up 8 hours     6379/tcp                            elegant_austin
+a721e4c8434c   nginx         "/docker-entrypoint.…"   9 hours ago     Up 9 hours     0.0.0.0:88->80/tcp, :::88->80/tcp   webserver
+
+要再次进入 运行中的 ubuntu 容器，可以用 docker exec -it 命令进入：
+[pengchao@centosb docker]$ docker exec -it 8eefad3976d9 /bin/bash
+root@8eefad3976d9:/# 
+退出依然在键盘上用 control +p +q 注意顺序
+root@8eefad3976d9:/# read escape sequence
+[pengchao@centosb docker]$ 
+
+可以看到此时已经退出 ubuntu 终端
+
+
+
+
+
+
+
