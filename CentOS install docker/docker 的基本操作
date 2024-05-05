@@ -35,6 +35,8 @@ docker ps -a -----查看最近运行中的镜像
 
 docker rm -f ------- 删除运行中的容器 
 
+[pengchao@centosb docker]$ docker exec -it e2b35c8722c1 /bin/bash     ----- 进入容器里面
+
 
 
 
