@@ -1,0 +1,6 @@
+Docker 的虚悬镜像是 repository 和 tag 都是none 的
+
+就是镜像名字和标签是none 然后有一个 image ID 的镜像是 虚悬镜像
+
+这是一道面试题 做一下记录
+
