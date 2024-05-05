@@ -1,0 +1,53 @@
+我们在给 ubuntu 装上 vim 命令后，想把该镜像保存并发布到阿里云上
+用 docker commit 命令
+首先 docker ps 查看当前ubuntu容器的ID
+[pengchao@centosb docker]$ docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS          PORTS                               NAMES
+8eefad3976d9   ubuntu        "/bin/bash"              16 minutes ago   Up 16 minutes                                       cranky_dhawan
+2af4fc7d13ef   redis:6.0.8   "docker-entrypoint.s…"   8 hours ago      Up 8 hours      6379/tcp                            elegant_austin
+a721e4c8434c   nginx         "/docker-entrypoint.…"   9 hours ago      Up 9 hours      0.0.0.0:88->80/tcp, :::88->80/tcp   webserver
+
+然后用docker commit 命令， -m 表示做了哪些更改， -a 表示更改的作者 pengchao/ubuntu:1.1 表示容器更改后的版本
+[pengchao@centosb docker]$ docker commit -m="add vim command" -a="pengchao" 8eefad3976d9 pengchao/ubuntu:1.1
+sha256:0ffb3a44d65ef7427075babe27364f420e514e8ea420cf7c99b5b215f7585794
+
+用docker images 命令检查，可以看到自己已经commit 过的镜像 pengchao/ubuntu:1.1 
+[pengchao@centosb docker]$ docker images
+REPOSITORY        TAG       IMAGE ID       CREATED          SIZE
+pengchao/ubuntu   1.1       0ffb3a44d65e   11 seconds ago   192MB
+nginx             latest    605c77e624dd   2 years ago      141MB
+tomcat            latest    fb5657adc892   2 years ago      680MB
+ubuntu            latest    ba6acccedd29   2 years ago      72.8MB
+redis             6.0.8     16ecd2772934   3 years ago      104MB
+
+启动自定义的镜像：
+[pengchao@centosb docker]$ docker run -it  0ffb3a44d65e /bin/bash
+root@8e8ecc2f5309:/# 
+_______________________________________________________________________
+将自定义镜像发布到阿里云
+进入 aliyun 容器与镜像服务网页：
+https://cr.console.aliyun.com/repository/cn-hangzhou/pengchao_ubuntu/myubuntu2024/details
+
+在终端登录aliyun 账号：
+[pengchao@centosb docker]$ docker login --username=pengchao_cloud registry.cn-hangzhou.aliyuncs.com
+Password: 
+WARNING! Your password will be stored unencrypted in /home/pengchao/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+将自定义的镜像image 打标签 并写入版本：
+[pengchao@centosb docker]$ docker tag 0ffb3a44d65e registry.cn-hangzhou.aliyuncs.com/pengchao_ubuntu/myubuntu2024:1.1
+
+上传镜像到 aliyun :
+
+[pengchao@centosb docker]$ docker push registry.cn-hangzhou.aliyuncs.com/pengchao_ubuntu/myubuntu2024:1.1
+The push refers to repository [registry.cn-hangzhou.aliyuncs.com/pengchao_ubuntu/myubuntu2024]
+4c866d968181: Pushed 
+9f54eef41275: Pushed 
+1.1: digest: sha256:c435e582b5b54f9da240284e23ad2e6ce613921ad4792bbcd217540dfa673b07 size: 741
+
+
+
+
+
