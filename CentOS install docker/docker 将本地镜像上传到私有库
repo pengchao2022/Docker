@@ -1,0 +1,152 @@
+运行私有仓库registry 相当于本地有一个docker hub
+
+docker pull registry  ----- 安装仓库 可以看到 registry 已经安装
+[pengchao@centosb docker]$ docker images
+REPOSITORY                                                       TAG       IMAGE ID       CREATED          SIZE
+registry.cn-hangzhou.aliyuncs.com/pengchao_ubuntu/myubuntu2024   1.1       0ffb3a44d65e   51 minutes ago   192MB
+pengchao/ubuntu                                                  1.1       0ffb3a44d65e   51 minutes ago   192MB
+nginx                                                            latest    605c77e624dd   2 years ago      141MB
+tomcat                                                           latest    fb5657adc892   2 years ago      680MB
+registry                                                         latest    b8604a3fe854   2 years ago      26.2MB
+ubuntu                                                           latest    ba6acccedd29   2 years ago      72.8MB
+redis                                                            6.0.8     16ecd2772934   3 years ago      104MB
+
+创建容器
+[pengchao@centosb docker]$ docker run -d -p 5000:5000 -v /pengchao/myregistry/:/tmp/registry --privileged=true registry
+c0116591b9a70c2b0cf7dd5b6d9d3ec43c670fc1957b85f6c4f86362f59361e9
+
+[pengchao@centosb docker]$ docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED              STATUS              PORTS                                       NAMES
+c0116591b9a7   registry      "/entrypoint.sh /etc…"   About a minute ago   Up About a minute   0.0.0.0:5000->5000/tcp, :::5000->5000/tcp   awesome_fermi
+2af4fc7d13ef   redis:6.0.8   "docker-entrypoint.s…"   9 hours ago          Up 9 hours          6379/tcp                                    elegant_austin
+a721e4c8434c   nginx         "/docker-entrypoint.…"   10 hours ago         Up 10 hours         0.0.0.0:88->80/tcp, :::88->80/tcp           webserver
+[pengchao@centosb docker]$ 
+制作自定义镜像：
+docker pull centos
+docker run -it eeb6ee3f44bd /bin/bash
+[pengchao@centosb docker]$ docker exec -it 2970f8391fc9 /bin/bash
+[root@2970f8391fc9 /]# 
+yum update
+yum install net-tools
+[pengchao@centosb docker]$ docker commit -m="installed net-tools" -a="pengchao" 2970f8391fc9 mycentos/pengchaocentos:2.0
+sha256:8f9ddaa14b9bd576269bc605a7f925688b39def359497ea576e7bca7ece9935f
+[pengchao@centosb docker]$ 
+[pengchao@centosb docker]$ docker images
+REPOSITORY                                                       TAG              IMAGE ID       CREATED              SIZE
+mycentos/pengchaocentos                                          2.0              8f9ddaa14b9b   About a minute ago   594MB
+pengchao/ubuntu                                                  1.1              0ffb3a44d65e   About an hour ago    192MB
+registry.cn-hangzhou.aliyuncs.com/pengchao_ubuntu/myubuntu2024   1.1              0ffb3a44d65e   About an hour ago    192MB
+nginx                                                            latest           605c77e624dd   2 years ago          141MB
+tomcat                                                           latest           fb5657adc892   2 years ago          680MB
+registry                                                         latest           b8604a3fe854   2 years ago          26.2MB
+ubuntu                                                           latest           ba6acccedd29   2 years ago          72.8MB
+centos                                                           centos7.9.2009   eeb6ee3f44bd   2 years ago          204MB
+redis                                                            6.0.8            16ecd2772934   3 years ago          104MB
+[pengchao@centosb docker]$ 
+验证仓库里有没有包：
+[pengchao@centosb docker]$ curl -XGET http://192.168.19.120:5000/v2/_catalog
+{"repositories":[]}               ---------是空的
+[pengchao@centosb docker]$ 
+将新镜像mycentos/pengchaocentos:2.0 修改为符合私服规范的Tag
+[pengchao@centosb docker]$ docker tag mycentos/pengchaocentos:2.0 192.168.19.120:5000/pengchaocnetos:2.0
+[pengchao@centosb docker]$ 
+pengchao@centosb docker]$ docker images
+REPOSITORY                                                       TAG              IMAGE ID       CREATED          SIZE
+192.168.19.120:5000/pengchaocnetos                               2.0              8f9ddaa14b9b   11 minutes ago   594MB
+mycentos/pengchaocentos                                          2.0              8f9ddaa14b9b   11 minutes ago   594MB
+pengchao/ubuntu                                                  1.1              0ffb3a44d65e   2 hours ago      192MB
+registry.cn-hangzhou.aliyuncs.com/pengchao_ubuntu/myubuntu2024   1.1              0ffb3a44d65e   2 hours ago      192MB
+nginx                                                            latest           605c77e624dd   2 years ago      141MB
+tomcat                                                           latest           fb5657adc892   2 years ago      680MB
+registry                                                         latest           b8604a3fe854   2 years ago      26.2MB
+ubuntu                                                           latest           ba6acccedd29   2 years ago      72.8MB
+centos                                                           centos7.9.2009   eeb6ee3f44bd   2 years ago      204MB
+redis                                                            6.0.8            16ecd2772934   3 years ago      104MB
+[pengchao@centosb docker]$ 
+修改docker 私服库配置文件使之支持 http 传输：
+su root
+[root@centosb docker]# vim /etc/docker/daemon.json 
+{
+  "registry-mirrors": ["https://qshjcvem.mirror.aliyuncs.com"],
+  "insecure-registries": ["192.168.19.120:5000"]
+}
+
+-----------------
+[root@centosb docker]# docker push 192.168.19.120:5000/pengchaocnetos:2.0
+The push refers to repository [192.168.19.120:5000/pengchaocnetos]
+Get "https://192.168.19.120:5000/v2/": http: server gave HTTP response to HTTPS client
+  ------这里传输不成功，需要重启docker 服务
+systemctl restart docker
+systemctl status docker
+再跑一遍 registry 镜像，使registry 容器重新建立起来：
+[pengchao@centosb docker]$ docker run -d -p 5000:5000 -v /pengchao/myregistry/:/tmp/registry --privileged=true registry
+51f9c51c17bcb9772c903c637009174ffdab34f955ef03f7d81adcd054034263
+----------------
+再次运行docker push 
+[pengchao@centosb docker]$ docker push 192.168.19.120:5000/pengchaocnetos:2.0
+The push refers to repository [192.168.19.120:5000/pengchaocnetos]
+a819d002a341: Pushed 
+174f56854903: Pushed 
+2.0: digest: sha256:f21e4b28071874d201210870289088bbf0b604daaa5c444ec35c9ab0bafa293f size: 742
+[pengchao@centosb docker]$ 
+
+可以看到上传成功
+
+验证私服库里面有哪些镜像：
+[pengchao@centosb docker]$ curl -XGET http://192.168.19.120:5000/v2/_catalog
+{"repositories":["pengchaocnetos"]}
+可以看到已经有了 pengchaocentos 镜像
+删掉创建的image 然后再重新pull 测试：
+[pengchao@centosb docker]$ docker images
+REPOSITORY                                                       TAG              IMAGE ID       CREATED          SIZE
+192.168.19.120:5000/pengchaocnetos                               2.0              8f9ddaa14b9b   29 minutes ago   594MB
+mycentos/pengchaocentos                                          2.0              8f9ddaa14b9b   29 minutes ago   594MB
+pengchao/ubuntu                                                  1.1              0ffb3a44d65e   2 hours ago      192MB
+registry.cn-hangzhou.aliyuncs.com/pengchao_ubuntu/myubuntu2024   1.1              0ffb3a44d65e   2 hours ago      192MB
+nginx                                                            latest           605c77e624dd   2 years ago      141MB
+tomcat                                                           latest           fb5657adc892   2 years ago      680MB
+registry                                                         latest           b8604a3fe854   2 years ago      26.2MB
+ubuntu                                                           latest           ba6acccedd29   2 years ago      72.8MB
+centos                                                           centos7.9.2009   eeb6ee3f44bd   2 years ago      204MB
+redis                                                            6.0.8            16ecd2772934   3 years ago      104MB
+[pengchao@centosb docker]$ docker rmi -f 8f9ddaa14b9b
+Untagged: 192.168.19.120:5000/pengchaocnetos:2.0
+Untagged: 192.168.19.120:5000/pengchaocnetos@sha256:f21e4b28071874d201210870289088bbf0b604daaa5c444ec35c9ab0bafa293f
+Untagged: mycentos/pengchaocentos:2.0
+Deleted: sha256:8f9ddaa14b9bd576269bc605a7f925688b39def359497ea576e7bca7ece9935f
+[pengchao@centosb docker]$ 
+[pengchao@centosb docker]$ docker images
+REPOSITORY                                                       TAG              IMAGE ID       CREATED       SIZE
+pengchao/ubuntu                                                  1.1              0ffb3a44d65e   2 hours ago   192MB
+registry.cn-hangzhou.aliyuncs.com/pengchao_ubuntu/myubuntu2024   1.1              0ffb3a44d65e   2 hours ago   192MB
+nginx                                                            latest           605c77e624dd   2 years ago   141MB
+tomcat                                                           latest           fb5657adc892   2 years ago   680MB
+registry                                                         latest           b8604a3fe854   2 years ago   26.2MB
+ubuntu                                                           latest           ba6acccedd29   2 years ago   72.8MB
+centos                                                           centos7.9.2009   eeb6ee3f44bd   2 years ago   204MB
+redis                                                            6.0.8            16ecd2772934   3 years ago   104MB
+[pengchao@centosb docker]$ 
+[pengchao@centosb docker]$ docker pull 192.168.19.120:5000/pengchaocnetos:2.0
+2.0: Pulling from pengchaocnetos
+2d473b07cdd5: Already exists 
+276450d58b5d: Already exists 
+Digest: sha256:f21e4b28071874d201210870289088bbf0b604daaa5c444ec35c9ab0bafa293f
+Status: Downloaded newer image for 192.168.19.120:5000/pengchaocnetos:2.0
+192.168.19.120:5000/pengchaocnetos:2.0
+[pengchao@centosb docker]$ docker images
+REPOSITORY                                                       TAG              IMAGE ID       CREATED          SIZE
+192.168.19.120:5000/pengchaocnetos                               2.0              8f9ddaa14b9b   32 minutes ago   594MB
+pengchao/ubuntu                                                  1.1              0ffb3a44d65e   2 hours ago      192MB
+registry.cn-hangzhou.aliyuncs.com/pengchao_ubuntu/myubuntu2024   1.1              0ffb3a44d65e   2 hours ago      192MB
+nginx                                                            latest           605c77e624dd   2 years ago      141MB
+tomcat                                                           latest           fb5657adc892   2 years ago      680MB
+registry                                                         latest           b8604a3fe854   2 years ago      26.2MB
+ubuntu                                                           latest           ba6acccedd29   2 years ago      72.8MB
+centos                                                           centos7.9.2009   eeb6ee3f44bd   2 years ago      204MB
+redis                                                            6.0.8            16ecd2772934   3 years ago      104MB
+[pengchao@centosb docker]$ 
+
+
+
+
+
